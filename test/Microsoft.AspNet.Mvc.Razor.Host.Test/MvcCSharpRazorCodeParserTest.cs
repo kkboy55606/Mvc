@@ -11,6 +11,7 @@ using Microsoft.AspNet.Razor.Generator;
 using Microsoft.AspNet.Razor.Parser;
 using Microsoft.AspNet.Razor.Parser.SyntaxTree;
 using Microsoft.AspNet.Razor.Text;
+using Microsoft.AspNet.Testing;
 using Xunit;
 
 namespace Microsoft.AspNet.Mvc.Razor
@@ -78,7 +79,7 @@ namespace Microsoft.AspNet.Mvc.Razor
                     .Accepts(AcceptedCharacters.None),
                 factory.MetaCode("model ")
                     .Accepts(AcceptedCharacters.None),
-                factory.Code(modelName + "\r\n")
+                factory.Code(modelName + Environment.NewLine)
                     .As(new ModelChunkGenerator("RazorView", expectedModel))
                     .Accepts(AcceptedCharacters.AnyExceptNewline),
                 factory.Markup("Bar")
@@ -141,7 +142,7 @@ namespace Microsoft.AspNet.Mvc.Razor
                     .Accepts(AcceptedCharacters.None),
                 factory.MetaCode("model ")
                     .Accepts(AcceptedCharacters.None),
-                factory.Code("Foo\r\n")
+                factory.Code("Foo" + Environment.NewLine)
                     .As(new ModelChunkGenerator("RazorView", "Foo"))
                     .Accepts(AcceptedCharacters.AnyExceptNewline),
                 factory.EmptyHtml(),
@@ -157,8 +158,10 @@ namespace Microsoft.AspNet.Mvc.Razor
 
             var expectedErrors = new[]
             {
-                new RazorError("Only one 'model' statement is allowed in a file.",
-                                new SourceLocation(13, 1, 1), 5)
+                new RazorError(
+                    "Only one 'model' statement is allowed in a file.",
+                    TestPlatformHelper.IsMono ? new SourceLocation(12, 1, 1) : new SourceLocation(13, 1, 1),
+                    5)
             };
 
             // Act
@@ -186,7 +189,7 @@ namespace Microsoft.AspNet.Mvc.Razor
                     .Accepts(AcceptedCharacters.None),
                 factory.MetaCode("model ")
                     .Accepts(AcceptedCharacters.None),
-                factory.Code("Foo\r\n")
+                factory.Code("Foo" + Environment.NewLine)
                     .As(new ModelChunkGenerator("RazorView", "Foo"))
                     .Accepts(AcceptedCharacters.AnyExceptNewline),
                 factory.EmptyHtml(),
@@ -202,8 +205,10 @@ namespace Microsoft.AspNet.Mvc.Razor
 
             var expectedErrors = new[]
             {
-                new RazorError("The 'inherits' keyword is not allowed when a 'model' keyword is used.",
-                               new SourceLocation(21, 1, 9), 1)
+                new RazorError(
+                    "The 'inherits' keyword is not allowed when a 'model' keyword is used.",
+                    TestPlatformHelper.IsMono ? new SourceLocation(20, 1, 9) : new SourceLocation(21, 1, 9),
+                    1)
             };
 
             // Act
@@ -357,7 +362,7 @@ namespace Microsoft.AspNet.Mvc.Razor
                     .Accepts(AcceptedCharacters.None),
                 factory.MetaCode("inject ")
                     .Accepts(AcceptedCharacters.None),
-                factory.Code(injectStatement + "\r\n")
+                factory.Code(injectStatement + Environment.NewLine)
                     .As(new InjectParameterGenerator(expectedService, expectedPropertyName))
                     .Accepts(AcceptedCharacters.AnyExceptNewline),
                 factory.Markup("Bar")
@@ -386,7 +391,7 @@ namespace Microsoft.AspNet.Mvc.Razor
                     .Accepts(AcceptedCharacters.None),
                 factory.MetaCode("inject ")
                     .Accepts(AcceptedCharacters.None),
-                factory.Code("   \r\n")
+                factory.Code("   " + Environment.NewLine)
                     .As(new InjectParameterGenerator(string.Empty, string.Empty))
                     .Accepts(AcceptedCharacters.AnyExceptNewline),
                 factory.Markup("Bar")
@@ -444,7 +449,7 @@ namespace Microsoft.AspNet.Mvc.Razor
         {
             // Arrange
             var errors = new List<RazorError>();
-            var documentContent = "@inject   IMyService  \r\nBar";
+            var documentContent = "@inject   IMyService  " + Environment.NewLine + "Bar";
             var factory = SpanFactory.CreateCsHtml();
             var expectedSpans = new Span[]
             {
@@ -453,7 +458,7 @@ namespace Microsoft.AspNet.Mvc.Razor
                     .Accepts(AcceptedCharacters.None),
                 factory.MetaCode("inject ")
                     .Accepts(AcceptedCharacters.None),
-                factory.Code("  IMyService  \r\n")
+                factory.Code("  IMyService  " + Environment.NewLine)
                     .As(new InjectParameterGenerator("IMyService", string.Empty))
                     .Accepts(AcceptedCharacters.AnyExceptNewline),
                 factory.Markup("Bar")

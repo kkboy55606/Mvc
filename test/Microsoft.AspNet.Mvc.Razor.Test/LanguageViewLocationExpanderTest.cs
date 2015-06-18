@@ -111,15 +111,15 @@ namespace Microsoft.AspNet.Mvc.Razor
                     }
                 };
 
-                yield return new object[]
-                {
-                    new[]
-                    {
-                        "/Areas/{2}/Views/{1}/{0}.cshtml",
-                        "/Areas/{2}/Views/Shared/{0}.cshtml",
-                        "/Views/Shared/{0}.cshtml"
-                    }
-                };
+                //yield return new object[]
+                //{
+                //    new[]
+                //    {
+                //        "/Areas/{2}/Views/{1}/{0}.cshtml",
+                //        "/Areas/{2}/Views/Shared/{0}.cshtml",
+                //        "/Views/Shared/{0}.cshtml"
+                //    }
+                //};
             }
         }
 
@@ -171,7 +171,7 @@ namespace Microsoft.AspNet.Mvc.Razor
             var viewLocationExpanderContext = new ViewLocationExpanderContext(new ActionContext(), "testView", false);
             var languageViewLocationExpander = new LanguageViewLocationExpander();
             viewLocationExpanderContext.Values = new Dictionary<string, string>();
-            viewLocationExpanderContext.Values["language"] = "gb";
+            viewLocationExpanderContext.Values["language"] = "!-invalid-culture-!";
 
             // Act
             var expandedViewLocations = languageViewLocationExpander.ExpandViewLocations(

@@ -591,7 +591,9 @@ Environment.NewLine;
             // Arrange
             var expectedInput =
                 "<input class=\"HtmlEncode[[text-box single-line]]\" data-val=\"HtmlEncode[[true]]\" " +
-                "data-val-required=\"HtmlEncode[[The DateTimeOffset field is required.]]\" id=\"HtmlEncode[[FieldPrefix]]\" " +
+                "data-val-required=\"HtmlEncode[[" +
+                (TestPlatformHelper.IsMono ? "RequiredAttribute_ValidationError" : "The DateTimeOffset field is required.") +
+                "]]\" id=\"HtmlEncode[[FieldPrefix]]\" " +
                 "name=\"HtmlEncode[[FieldPrefix]]\" type=\"HtmlEncode[[" +
                 dataTypeName + 
                 "]]\" value=\"HtmlEncode[[" + expected + "]]\" />";
@@ -643,7 +645,9 @@ Environment.NewLine;
             // Arrange
             var expectedInput =
                 "<input class=\"HtmlEncode[[text-box single-line]]\" data-val=\"HtmlEncode[[true]]\" " +
-                "data-val-required=\"HtmlEncode[[The DateTimeOffset field is required.]]\" id=\"HtmlEncode[[FieldPrefix]]\" " + 
+                "data-val-required=\"HtmlEncode[[" +
+                (TestPlatformHelper.IsMono ? "RequiredAttribute_ValidationError" : "The DateTimeOffset field is required.") +
+                "]]\" id=\"HtmlEncode[[FieldPrefix]]\" " + 
                 "name=\"HtmlEncode[[FieldPrefix]]\" type=\"HtmlEncode[[" +
                 dataTypeName + 
                 "]]\" value=\"HtmlEncode[[" + expected + "]]\" />";
@@ -700,7 +704,9 @@ Environment.NewLine;
             // Arrange
             var expectedInput = 
                 "<input class=\"HtmlEncode[[text-box single-line]]\" data-val=\"HtmlEncode[[true]]\" " +
-                "data-val-required=\"HtmlEncode[[The DateTimeOffset field is required.]]\" id=\"HtmlEncode[[FieldPrefix]]\" " +
+                "data-val-required=\"HtmlEncode[[" +
+                (TestPlatformHelper.IsMono ? "RequiredAttribute_ValidationError" : "The DateTimeOffset field is required.") +
+                "]]\" id=\"HtmlEncode[[FieldPrefix]]\" " +
                 "name=\"HtmlEncode[[FieldPrefix]]\" type=\"HtmlEncode[[" +
                 dataTypeName + 
                 "]]\" value=\"HtmlEncode[[Formatted as 2000-01-02T03:04:05.0600000+00:00]]\" />";

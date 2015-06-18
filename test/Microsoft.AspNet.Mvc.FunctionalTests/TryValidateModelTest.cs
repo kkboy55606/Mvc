@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Testing;
 using Microsoft.Framework.DependencyInjection;
 using Newtonsoft.Json;
 using Xunit;
@@ -42,9 +43,14 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             Assert.Equal(4, json.Count);
             Assert.Equal("CompanyName cannot be null or empty.", json["CompanyName"]);
             Assert.Equal("The field Price must be between 20 and 100.", json["Price"]);
-            Assert.Equal("The Category field is required.", json["Category"]);
-            Assert.Equal("The field Contact Us must be a string with a maximum length of 20."+
-                "The field Contact Us must match the regular expression '^[0-9]*$'.", json["Contact"]);
+            Assert.Equal(
+                ContentNormalizer.GetNormalizedContent("The Category field is required."),
+                json["Category"]);
+            AssertContainsExpectedString(new [] {
+                "The field Contact Us must be a string with a maximum length of 20.",
+                "The field Contact Us must match the regular expression " + 
+                (TestPlatformHelper.IsMono ? "^[0-9]*$." : "'^[0-9]*$'.")},
+                json["Contact"]);
         }
 
         [Fact]
@@ -106,14 +112,35 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             var json = JsonConvert.DeserializeObject<Dictionary<string, string>>(body);
             Assert.Equal("CompanyName cannot be null or empty.", json["[0].CompanyName"]);
             Assert.Equal("The field Price must be between 20 and 100.", json["[0].Price"]);
-            Assert.Equal("The Category field is required.", json["[0].Category"]);
-            Assert.Equal("The field Contact Us must be a string with a maximum length of 20." +
-                "The field Contact Us must match the regular expression '^[0-9]*$'.", json["[0].Contact"]);
+            Assert.Equal(
+                ContentNormalizer.GetNormalizedContent("The Category field is required."),
+                json["[0].Category"]);
+            AssertContainsExpectedString(new [] {
+                "The field Contact Us must be a string with a maximum length of 20.",
+                "The field Contact Us must match the regular expression " + 
+                (TestPlatformHelper.IsMono ? "^[0-9]*$." : "'^[0-9]*$'.")},
+                json["[0].Contact"]);
             Assert.Equal("CompanyName cannot be null or empty.", json["[1].CompanyName"]);
             Assert.Equal("The field Price must be between 20 and 100.", json["[1].Price"]);
-            Assert.Equal("The Category field is required.", json["[1].Category"]);
-            Assert.Equal("The field Contact Us must be a string with a maximum length of 20." +
-                "The field Contact Us must match the regular expression '^[0-9]*$'.", json["[1].Contact"]);
+            Assert.Equal(
+                ContentNormalizer.GetNormalizedContent("The Category field is required."),
+                json["[1].Category"]);
+            AssertContainsExpectedString(new [] {
+                "The field Contact Us must be a string with a maximum length of 20.",
+                "The field Contact Us must match the regular expression " + 
+                (TestPlatformHelper.IsMono ? "^[0-9]*$." : "'^[0-9]*$'.")},
+                json["[1].Contact"]);
+        }
+
+        private void AssertContainsExpectedString(string[] expected, string actual)
+        {
+            foreach (var item in expected)
+            {
+                Assert.Contains(item, actual);
+                actual = actual.Replace(item, "");
+            }
+
+            Assert.Empty(actual.Trim());
         }
     }
 }

@@ -2,6 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.IO;
+using Microsoft.AspNet.Testing;
+using Microsoft.AspNet.Testing.xunit;
 using Xunit;
 
 namespace Microsoft.AspNet.Mvc.Razor
@@ -41,9 +43,9 @@ namespace Microsoft.AspNet.Mvc.Razor
             // Arrange
             var expected = new[]
             {
-                @"Views\Home\_ViewStart.cshtml",
-                @"Views\_ViewStart.cshtml",
-                @"_ViewStart.cshtml"
+                NormalizePath(@"Views\Home\_ViewStart.cshtml"),
+                NormalizePath(@"Views\_ViewStart.cshtml"),
+                NormalizePath(@"_ViewStart.cshtml")
             };
 
             // Act
@@ -62,9 +64,9 @@ namespace Microsoft.AspNet.Mvc.Razor
             // Arrange
             var expected = new[]
             {
-                @"Views\Home\_ViewImports.cshtml",
-                @"Views\_ViewImports.cshtml",
-                @"_ViewImports.cshtml"
+                NormalizePath(@"Views\Home\_ViewImports.cshtml"),
+                NormalizePath(@"Views\_ViewImports.cshtml"),
+                NormalizePath(@"_ViewImports.cshtml")
             };
 
             // Act
@@ -83,8 +85,8 @@ namespace Microsoft.AspNet.Mvc.Razor
             // Arrange
             var expected = new[]
             {
-                @"Views\_ViewStart.cshtml",
-                @"_ViewStart.cshtml"
+                NormalizePath(@"Views\_ViewStart.cshtml"),
+                NormalizePath(@"_ViewStart.cshtml")
             };
 
             // Act
@@ -103,9 +105,9 @@ namespace Microsoft.AspNet.Mvc.Razor
             // Arrange
             var expected = new[]
             {
-                @"Views\Home\_ViewImports.cshtml",
-                @"Views\_ViewImports.cshtml",
-                @"_ViewImports.cshtml"
+                NormalizePath(@"Views\Home\_ViewImports.cshtml"),
+                NormalizePath(@"Views\_ViewImports.cshtml"),
+                NormalizePath(@"_ViewImports.cshtml")
             };
 
             // Act
@@ -124,8 +126,8 @@ namespace Microsoft.AspNet.Mvc.Razor
             // Arrange
             var expected = new[]
             {
-                @"Views\_ViewImports.cshtml",
-                @"_ViewImports.cshtml"
+                NormalizePath(@"Views\_ViewImports.cshtml"),
+                NormalizePath(@"_ViewImports.cshtml")
             };
 
             // Act
@@ -143,12 +145,12 @@ namespace Microsoft.AspNet.Mvc.Razor
             // Arrange
             var expected = new[]
             {
-                @"Areas\MyArea\Sub\Views\Admin\_ViewStart.cshtml",
-                @"Areas\MyArea\Sub\Views\_ViewStart.cshtml",
-                @"Areas\MyArea\Sub\_ViewStart.cshtml",
-                @"Areas\MyArea\_ViewStart.cshtml",
-                @"Areas\_ViewStart.cshtml",
-                @"_ViewStart.cshtml",
+                NormalizePath(@"Areas\MyArea\Sub\Views\Admin\_ViewStart.cshtml"),
+                NormalizePath(@"Areas\MyArea\Sub\Views\_ViewStart.cshtml"),
+                NormalizePath(@"Areas\MyArea\Sub\_ViewStart.cshtml"),
+                NormalizePath(@"Areas\MyArea\_ViewStart.cshtml"),
+                NormalizePath(@"Areas\_ViewStart.cshtml"),
+                NormalizePath(@"_ViewStart.cshtml"),
             };
             var viewPath = Path.Combine("Areas", "MyArea", "Sub", "Views", "Admin", fileName);
 
@@ -168,12 +170,12 @@ namespace Microsoft.AspNet.Mvc.Razor
             // Arrange
             var expected = new[]
             {
-                @"Areas\MyArea\Sub\Views\Admin\_ViewImports.cshtml",
-                @"Areas\MyArea\Sub\Views\_ViewImports.cshtml",
-                @"Areas\MyArea\Sub\_ViewImports.cshtml",
-                @"Areas\MyArea\_ViewImports.cshtml",
-                @"Areas\_ViewImports.cshtml",
-                @"_ViewImports.cshtml",
+                NormalizePath(@"Areas\MyArea\Sub\Views\Admin\_ViewImports.cshtml"),
+                NormalizePath(@"Areas\MyArea\Sub\Views\_ViewImports.cshtml"),
+                NormalizePath(@"Areas\MyArea\Sub\_ViewImports.cshtml"),
+                NormalizePath(@"Areas\MyArea\_ViewImports.cshtml"),
+                NormalizePath(@"Areas\_ViewImports.cshtml"),
+                NormalizePath(@"_ViewImports.cshtml"),
             };
             var viewPath = Path.Combine("Areas", "MyArea", "Sub", "Views", "Admin", fileName);
 
@@ -192,11 +194,11 @@ namespace Microsoft.AspNet.Mvc.Razor
             // Arrange
             var expected = new[]
             {
-                @"Areas\MyArea\Sub\Views\_ViewStart.cshtml",
-                @"Areas\MyArea\Sub\_ViewStart.cshtml",
-                @"Areas\MyArea\_ViewStart.cshtml",
-                @"Areas\_ViewStart.cshtml",
-                @"_ViewStart.cshtml",
+                NormalizePath(@"Areas\MyArea\Sub\Views\_ViewStart.cshtml"),
+                NormalizePath(@"Areas\MyArea\Sub\_ViewStart.cshtml"),
+                NormalizePath(@"Areas\MyArea\_ViewStart.cshtml"),
+                NormalizePath(@"Areas\_ViewStart.cshtml"),
+                NormalizePath(@"_ViewStart.cshtml"),
             };
             var viewPath = Path.Combine("Areas", "MyArea", "Sub", "Views", "Admin", fileName);
 
@@ -220,7 +222,9 @@ namespace Microsoft.AspNet.Mvc.Razor
             Assert.Empty(result);
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // https://github.com/aspnet/Mvc/issues/2745
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public void GetViewStartLocations_ReturnsEmptySequence_IfPathIsRooted()
         {
             // Arrange
@@ -233,7 +237,9 @@ namespace Microsoft.AspNet.Mvc.Razor
             Assert.Empty(result);
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // https://github.com/aspnet/Mvc/issues/2745
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public void GetViewImportsLocations_ReturnsEmptySequence_IfPathIsRooted()
         {
             // Arrange
@@ -244,6 +250,16 @@ namespace Microsoft.AspNet.Mvc.Razor
 
             // Assert
             Assert.Empty(result);
+        }
+
+        private static string NormalizePath(string path)
+        {
+            if (TestPlatformHelper.IsMono)
+            {
+                return path.Replace("\\", "/");
+            }
+            
+            return path;
         }
     }
 }

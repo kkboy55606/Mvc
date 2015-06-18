@@ -727,10 +727,12 @@ namespace Microsoft.AspNet.Mvc.ApplicationModels
             Assert.Equal(2, actions.Count());
 
             var action = Assert.Single(actions, a => a.AttributeRouteModel.Template == "Products");
-            Assert.Equal<string>(new string[] { "GET", "POST" }, action.HttpMethods);
+            Assert.Contains("GET", action.HttpMethods);
+            Assert.Contains("POST", action.HttpMethods);
 
             action = Assert.Single(actions, a => a.AttributeRouteModel.Template == "v2/Products");
-            Assert.Equal<string>(new string[] { "GET", "POST" }, action.HttpMethods);
+            Assert.Contains("GET", action.HttpMethods);
+            Assert.Contains("POST", action.HttpMethods);
         }
 
         [Fact]

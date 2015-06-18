@@ -9,8 +9,11 @@ using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Testing;
+using Microsoft.AspNet.Testing.xunit;
 using Microsoft.Framework.DependencyInjection;
 using ModelBindingWebSite.Models;
 using ModelBindingWebSite.ViewModels;
@@ -792,13 +795,14 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
 
             // 8 is the value of MaxModelValidationErrors for the application being tested.
             Assert.Equal(8, json.Count);
-            Assert.Equal("The Field1 field is required.", json["Field1"]);
-            Assert.Equal("The Field2 field is required.", json["Field2"]);
-            Assert.Equal("The Field3 field is required.", json["Field3"]);
-            Assert.Equal("The Field4 field is required.", json["Field4"]);
-            Assert.Equal("The Field5 field is required.", json["Field5"]);
-            Assert.Equal("The Field6 field is required.", json["Field6"]);
-            Assert.Equal("The Field7 field is required.", json["Field7"]);
+            var expectedMono = "RequiredAttribute_ValidationError";
+            Assert.Equal(TestPlatformHelper.IsMono ? expectedMono : "The Field1 field is required.", json["Field1"]);
+            Assert.Equal(TestPlatformHelper.IsMono ? expectedMono : "The Field2 field is required.", json["Field2"]);
+            Assert.Equal(TestPlatformHelper.IsMono ? expectedMono : "The Field3 field is required.", json["Field3"]);
+            Assert.Equal(TestPlatformHelper.IsMono ? expectedMono : "The Field4 field is required.", json["Field4"]);
+            Assert.Equal(TestPlatformHelper.IsMono ? expectedMono : "The Field5 field is required.", json["Field5"]);
+            Assert.Equal(TestPlatformHelper.IsMono ? expectedMono : "The Field6 field is required.", json["Field6"]);
+            Assert.Equal(TestPlatformHelper.IsMono ? expectedMono : "The Field7 field is required.", json["Field7"]);
             Assert.Equal("The maximum number of allowed model errors has been reached.", json[""]);
         }
 
@@ -815,9 +819,21 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             // Assert
             var json = JsonConvert.DeserializeObject<Dictionary<string, string>>(response);
             Assert.Equal(3, json.Count);
-            Assert.Equal("The Field1 field is required.", json["Field1"]);
-            Assert.Equal("The Field2 field is required.", json["Field2"]);
-            Assert.Equal("The Field3 field is required.", json["Field3"]);
+            Assert.Equal(
+                TestPlatformHelper.IsMono?
+                    "RequiredAttribute_ValidationError" :
+                    "The Field1 field is required.",
+                    json["Field1"]);
+            Assert.Equal(
+                TestPlatformHelper.IsMono?
+                "RequiredAttribute_ValidationError" :
+                "The Field2 field is required.",
+                json["Field2"]);
+            Assert.Equal(
+                TestPlatformHelper.IsMono?
+                "RequiredAttribute_ValidationError" :
+                "The Field3 field is required.",
+                json["Field3"]);
         }
 
         [Fact]
@@ -1256,13 +1272,19 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             var modelStateErrors = JsonConvert.DeserializeObject<IDictionary<string, IEnumerable<string>>>(body);
 
             Assert.Equal(2, modelStateErrors.Count);
-            Assert.Equal(new[] {
+            var expectedErrors = new[] {
                     "The field Year must be between 1980 and 2034.",
                     "Year is invalid"
-                    }, modelStateErrors["Year"]);
+                };
+            foreach (var error in modelStateErrors["Year"])
+            {
+                Assert.Contains(error, expectedErrors);
+            }
 
             var vinError = Assert.Single(modelStateErrors["Vin"]);
-            Assert.Equal("The Vin field is required.", vinError);
+            Assert.Equal(
+                TestPlatformHelper.IsMono ? "RequiredAttribute_ValidationError" : "The Vin field is required.",
+                vinError);
         }
 
         [Fact]
@@ -1336,7 +1358,9 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
         }
 
 #if DNX451
-        [Fact]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/18
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task UpdateVehicle_WithXml_BindsBodyServicesAndHeaders()
         {
             // Arrange
@@ -1406,6 +1430,16 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
 #if GENERATE_BASELINES
             ResourceFile.UpdateFile(_assembly, outputFile, expectedContent, responseContent);
 #else
+            expectedContent = ContentNormalizer.GetNormalizedContent(expectedContent);
+            if (TestPlatformHelper.IsMono)
+            {
+                expectedContent = expectedContent.Replace(
+                    "<span class=\"field-validation-error\" data-valmsg-for=\"Vehicle.Year\"" +
+                    " data-valmsg-replace=\"true\">The field Year must be between 1980 and 2034.</span>",
+                    "<span class=\"field-validation-error\" data-valmsg-for=\"Vehicle.Year\"" +
+                    " data-valmsg-replace=\"true\">Year is invalid</span>");
+            }
+
             Assert.Equal(expectedContent, responseContent, ignoreLineEndingDifferences: true);
 #endif
         }
@@ -1442,7 +1476,10 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
 #if GENERATE_BASELINES
             ResourceFile.UpdateFile(_assembly, outputFile, expectedContent, responseContent);
 #else
-            Assert.Equal(expectedContent, responseContent, ignoreLineEndingDifferences: true);
+            Assert.Equal(
+                ContentNormalizer.GetNormalizedContent(expectedContent),
+                responseContent,
+                ignoreLineEndingDifferences: true);
 #endif
         }
 
@@ -1653,7 +1690,10 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
 #if GENERATE_BASELINES
             ResourceFile.UpdateFile(_assembly, outputFile, expectedContent, responseContent);
 #else
-            Assert.Equal(expectedContent, responseContent, ignoreLineEndingDifferences: true);
+            Assert.Equal(
+                ContentNormalizer.GetNormalizedContent(expectedContent),
+                responseContent,
+                ignoreLineEndingDifferences: true);
 #endif
         }
 
@@ -1696,7 +1736,10 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
 #if GENERATE_BASELINES
             ResourceFile.UpdateFile(_assembly, outputFile, expectedContent, responseContent);
 #else
-            Assert.Equal(expectedContent, responseContent, ignoreLineEndingDifferences: true);
+            Assert.Equal(
+                ContentNormalizer.GetNormalizedContent(expectedContent),
+                responseContent,
+                ignoreLineEndingDifferences: true);
 #endif
         }
 

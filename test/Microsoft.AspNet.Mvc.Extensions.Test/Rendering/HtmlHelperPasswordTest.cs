@@ -160,8 +160,9 @@ namespace Microsoft.AspNet.Mvc.Rendering
         public void PasswordGeneratesUnobtrusiveValidation()
         {
             // Arrange
-            var expected = @"<input data-val=""HtmlEncode[[true]]"" data-val-required=""HtmlEncode[[The Property2 field is required.]]"" " +
-                           @"id=""HtmlEncode[[Property2]]"" name=""HtmlEncode[[Property2]]"" type=""HtmlEncode[[password]]"" />";
+            var expected = @"<input data-val=""HtmlEncode[[true]]"" data-val-required=""HtmlEncode[[" +
+                        (TestPlatformHelper.IsMono ? "RequiredAttribute_ValidationError" : "The Property2 field is required.") + @"]]"" " +
+                        @"id=""HtmlEncode[[Property2]]"" name=""HtmlEncode[[Property2]]"" type=""HtmlEncode[[password]]"" />";
             var helper = DefaultTemplatesUtilities.GetHtmlHelper(GetViewDataWithModelStateAndModelAndViewDataValues());
 
             // Act
@@ -266,8 +267,9 @@ namespace Microsoft.AspNet.Mvc.Rendering
         public void PasswordFor_GeneratesUnobtrusiveValidationAttributes()
         {
             // Arrange
-            var expected = @"<input data-val=""HtmlEncode[[true]]"" data-val-required=""HtmlEncode[[The Property2 field is required.]]"" " +
-                           @"id=""HtmlEncode[[Property2]]"" name=""HtmlEncode[[Property2]]"" type=""HtmlEncode[[password]]"" />";
+            var expected = @"<input data-val=""HtmlEncode[[true]]"" data-val-required=""HtmlEncode[[" +
+                        (TestPlatformHelper.IsMono ? "RequiredAttribute_ValidationError" : "The Property2 field is required.") + @"]]"" " +
+                        @"id=""HtmlEncode[[Property2]]"" name=""HtmlEncode[[Property2]]"" type=""HtmlEncode[[password]]"" />";
             var helper = DefaultTemplatesUtilities.GetHtmlHelper(GetViewDataWithErrors());
 
             // Act

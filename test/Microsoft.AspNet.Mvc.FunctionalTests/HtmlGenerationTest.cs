@@ -77,7 +77,10 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
 #if GENERATE_BASELINES
                 ResourceFile.UpdateFile(_resourcesAssembly, outputFile, expectedContent, responseContent);
 #else
-                Assert.Equal(expectedContent.Trim(), responseContent, ignoreLineEndingDifferences: true);
+                Assert.Equal(
+                    ContentNormalizer.GetNormalizedContent(expectedContent.Trim()),
+                    responseContent,
+                    ignoreLineEndingDifferences: true);
 #endif
             }
             else
@@ -89,7 +92,10 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
                 ResourceFile.UpdateFile(_resourcesAssembly, outputFile, expectedContent, responseContent);
 #else
                 expectedContent = string.Format(expectedContent, forgeryToken);
-                Assert.Equal(expectedContent.Trim(), responseContent, ignoreLineEndingDifferences: true);
+                Assert.Equal(
+                    ContentNormalizer.GetNormalizedContent(expectedContent.Trim()),
+                    responseContent,
+                    ignoreLineEndingDifferences: true);
 #endif
             }
         }
@@ -133,7 +139,10 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
 #if GENERATE_BASELINES
                 ResourceFile.UpdateFile(_resourcesAssembly, outputFile, expectedContent, responseContent);
 #else
-                Assert.Equal(expectedContent.Trim(), responseContent, ignoreLineEndingDifferences: true);
+                Assert.Equal(
+                    ContentNormalizer.GetNormalizedContent(expectedContent.Trim()),
+                    responseContent,
+                    ignoreLineEndingDifferences: true);
 #endif
             }
             else
@@ -145,7 +154,10 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
                 ResourceFile.UpdateFile(_resourcesAssembly, outputFile, expectedContent, responseContent);
 #else
                 expectedContent = string.Format(expectedContent, forgeryToken);
-                Assert.Equal(expectedContent.Trim(), responseContent, ignoreLineEndingDifferences: true);
+                Assert.Equal(
+                    ContentNormalizer.GetNormalizedContent(expectedContent.Trim()),
+                    responseContent,
+                    ignoreLineEndingDifferences: true);
 #endif
             }
         }
@@ -188,7 +200,10 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             ResourceFile.UpdateFile(_resourcesAssembly, outputFile, expectedContent, responseContent);
 #else
             expectedContent = string.Format(expectedContent, forgeryToken);
-            Assert.Equal(expectedContent.Trim(), responseContent, ignoreLineEndingDifferences: true);
+            Assert.Equal(
+                ContentNormalizer.GetNormalizedContent(expectedContent.Trim()),
+                responseContent,
+                ignoreLineEndingDifferences: true);
 #endif
         }
 

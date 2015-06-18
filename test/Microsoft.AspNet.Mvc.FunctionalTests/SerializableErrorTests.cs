@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Mvc.Xml;
+using Microsoft.AspNet.Testing;
+using Microsoft.AspNet.Testing.xunit;
 using Microsoft.Framework.DependencyInjection;
 using Xunit;
 
@@ -25,6 +27,12 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
         [InlineData("application/xml-dcs")]
         public async Task ModelStateErrors_AreSerialized(string acceptHeader)
         {
+            // Mono issue - https://github.com/aspnet/External/issues/18
+            if (TestPlatformHelper.IsMono && acceptHeader == "application/xml-dcs")
+            {
+                return;
+            }
+
             // Arrange
             var server = TestHelper.CreateServer(_app, SiteName, _configureServices);
             var client = server.CreateClient();
@@ -43,7 +51,9 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             XmlAssert.Equal(expectedXml, responseData);
         }
 
-        [Theory]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/18
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         [InlineData("application/xml-xmlser")]
         [InlineData("application/xml-dcs")]
         public async Task PostedSerializableError_IsBound(string acceptHeader)
@@ -67,7 +77,9 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             XmlAssert.Equal(expectedXml, responseData);
         }
 
-        [Theory]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/18
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         [InlineData("application/xml-xmlser")]
         [InlineData("application/xml-dcs")]
         public async Task IsReturnedInExpectedFormat(string acceptHeader)

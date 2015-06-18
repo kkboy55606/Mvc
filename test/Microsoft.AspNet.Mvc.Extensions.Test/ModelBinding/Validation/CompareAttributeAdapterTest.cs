@@ -4,6 +4,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNet.Testing;
 using Microsoft.Framework.DependencyInjection;
+using Microsoft.AspNet.Testing;
 using Xunit;
 
 namespace Microsoft.AspNet.Mvc.ModelBinding.Validation
@@ -31,7 +32,11 @@ namespace Microsoft.AspNet.Mvc.ModelBinding.Validation
 
             // Assert
             var rule = Assert.Single(rules);
-            Assert.Equal("'MyPropertyDisplayName' and 'OtherPropertyDisplayName' do not match.", rule.ErrorMessage);
+            Assert.Equal(
+                TestPlatformHelper.IsMono ?
+                "CompareAttribute_MustMatch" :
+                "'MyPropertyDisplayName' and 'OtherPropertyDisplayName' do not match.",
+                rule.ErrorMessage);
         }
 
         [Fact]
@@ -52,7 +57,11 @@ namespace Microsoft.AspNet.Mvc.ModelBinding.Validation
 
             // Assert
             var rule = Assert.Single(rules);
-            Assert.Equal("'MyProperty' and 'OtherProperty' do not match.", rule.ErrorMessage);
+            Assert.Equal(
+                TestPlatformHelper.IsMono ?
+                "CompareAttribute_MustMatch" :
+                "'MyProperty' and 'OtherProperty' do not match.",
+                rule.ErrorMessage);
         }
 
         [Fact]

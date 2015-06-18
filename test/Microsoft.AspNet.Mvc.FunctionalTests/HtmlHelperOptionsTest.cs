@@ -83,7 +83,10 @@ True";
             var body = await client.GetStringAsync("http://localhost/HtmlHelperOptions/OverrideAppWideDefaultsInView");
 
             // Assert
-            Assert.Equal(expected, body.Trim(), ignoreLineEndingDifferences: true);
+            Assert.Equal(
+                ContentNormalizer.GetNormalizedContent(expected),
+                body.Trim(),
+                ignoreLineEndingDifferences: true);
         }
     }
 }

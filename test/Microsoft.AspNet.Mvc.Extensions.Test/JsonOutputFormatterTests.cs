@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Http.Internal;
+using Microsoft.AspNet.Testing;
 using Microsoft.Net.Http.Headers;
 using Moq;
 using Newtonsoft.Json;
@@ -152,6 +153,12 @@ namespace Microsoft.AspNet.Mvc.Core.Test.Formatters
             string encodingAsString,
             bool isDefaultEncoding)
         {
+            // This encoding is absent in mono.
+            if (TestPlatformHelper.IsMono && encodingAsString == "iso-2022-kr")
+            {
+                return;
+            }
+
             // Arrange
             var formatter = new JsonOutputFormatter();
             var formattedContent = "\"" + content + "\"";

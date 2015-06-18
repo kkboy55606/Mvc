@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Mvc.ModelBinding;
+using Microsoft.AspNet.Testing;
 using Xunit;
 
 namespace Microsoft.AspNet.Mvc.IntegrationTests
@@ -1095,7 +1096,10 @@ namespace Microsoft.AspNet.Mvc.IntegrationTests
 
         private static void AssertRequiredError(string key, ModelError error)
         {
-            Assert.Equal(string.Format("The {0} field is required.", key), error.ErrorMessage);
+            Assert.Equal(
+                TestPlatformHelper.IsMono ?
+                "RequiredAttribute_ValidationError" :
+                string.Format("The {0} field is required.", key), error.ErrorMessage);
             Assert.Null(error.Exception);
         }
     }

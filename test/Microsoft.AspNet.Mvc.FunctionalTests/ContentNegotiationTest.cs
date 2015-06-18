@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using ContentNegotiationWebSite;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Mvc.Xml;
+using Microsoft.AspNet.Testing;
+using Microsoft.AspNet.Testing.xunit;
 using Microsoft.Framework.DependencyInjection;
 using Xunit;
 
@@ -56,6 +58,11 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             // Assert
             Assert.Equal(expectedContentType, response.Content.Headers.ContentType);
             var body = await response.Content.ReadAsStringAsync();
+            if (TestPlatformHelper.IsMono)
+            {
+                expectedBody = expectedBody.Replace("\r\n", "\n");
+            }
+
             Assert.Equal(expectedBody, body);
         }
 
@@ -112,7 +119,9 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             Assert.Equal(expectedOutput, actual);
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/18
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task ProducesAttribute_WithTypeAndContentType_UsesContentType()
         {
             // Arrange
@@ -319,7 +328,9 @@ END:VCARD
             Assert.Equal(expectedBody, body);
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/18
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task XmlFormatter_SupportedMediaType_DoesNotChangeAcrossRequests()
         {
             // Arrange
